@@ -1,0 +1,178 @@
+######################################################################
+# Author: Jayden Fleming, Alain Irumva
+# Username: flemingj2, irumvaa
+#
+# Assignment: PO1
+# Purpose: GUI Cipher Tool
+######################################################################
+# Acknowledgements:
+# - https://tkdocs.com/tutorial/
+# - https://coolors.co/palettes/trending/grey
+####################################################################################
+
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+
+my_theme = {
+    "base": "#474448",
+    "crust": "#ffffff",
+    "bg1": "#454545",
+    "fg1": "#ccdfdf",
+}
+
+class MainWindow:
+    def __init__(self):
+        self.elements = {
+            "frames": {},
+            "button": {},
+            "textbox": {},
+            "entry": {},
+            "label": {},
+            "combobox": {}
+        }
+        self.theme = my_theme
+        self.root = tk.Tk()
+        self.root.minsize(width=600, height=300)
+        self.root.maxsize(width=600, height=300)
+        self.root.title("Cipher Tool")
+        self.root.config(bg="#474448")
+        self.root.update_idletasks()
+
+    def create_gui(self):
+        """
+        Creates & setup elements for window
+        :return:
+        """
+        elm = self.elements
+        btn = elm["button"]
+        frame = elm["frames"]
+        textbox = elm["textbox"]
+        entry = elm["entry"]
+        label = elm["label"]
+        combo = elm["combobox"]
+        theme = self.theme
+        wpx, hpx = self.wpx, self.hpx
+
+        # init frames
+        frame["left_nav"] = tk.Frame(self.root, width=wpx(0.2), height=hpx(1), bg=theme["crust"])
+        frame["right"] = tk.Frame(self.root, bg=theme["base"])
+        frame["input"] = tk.LabelFrame(frame["right"], text="Input", bg=theme["crust"])
+        frame["output"] = tk.LabelFrame(frame["right"], text="Output", bg=theme["crust"])
+        
+        # init buttons
+        btn["encode"] = tk.Button(frame["left_nav"], text="Encode", bg=theme["bg1"], fg=theme["fg1"])
+        btn["decode"] = tk.Button(frame["left_nav"], text="Decode", bg=theme["bg1"], fg=theme["fg1"])
+
+        # init textboxes
+        textbox["input"] = tk.Text(frame["input"], height=1)
+        textbox["output"] = tk.Text(frame["output"], height=1)
+
+        # init labels
+        label["key"] = tk.Label(frame["left_nav"], text="Key:")
+        label["cipher-type"] = tk.Label(frame["left_nav"], text="Cipher Type:")
+        label["output-type"] = tk.Label(frame["left_nav"], text="Output Type:")
+
+        # init entry boxes
+        entry["key"] = tk.Entry(frame["left_nav"])
+        entry["key"].insert(1, "0")
+
+        # init combo-boxes
+        combo["cipher"] = ttk.Combobox(frame["left_nav"], values=("caesar", "morse"), state="readonly")
+        combo["cipher"].set("caesar")
+        combo["output"] = ttk.Combobox(frame["left_nav"], values=("text", "file"), state="readonly")
+        combo["output"].set("text")
+
+        # configure layout
+        frame["left_nav"].pack(side=tk.LEFT, fill=tk.Y, expand=True)
+        frame["right"].pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+        frame["input"].pack(side=tk.TOP, fill=tk.BOTH, expand=True, pady=10)
+        frame["output"].pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, pady=10)
+
+        btn["encode"].pack(side=tk.TOP, padx=20, pady=5)
+        btn["decode"].pack(side=tk.TOP, padx=20, pady=5)
+
+        textbox["input"].pack(fill=tk.BOTH, expand=True)
+        textbox["output"].pack(fill=tk.BOTH, expand=True)
+
+        label["key"].pack(side=tk.TOP, padx=15, pady=1)
+        entry["key"].pack(side=tk.TOP, padx=10, pady=5)
+
+        label["cipher-type"].pack(side=tk.TOP, padx=15, pady=1)
+        combo["cipher"].pack(side=tk.TOP, padx=10, pady=5)
+
+        label["output-type"].pack(side=tk.TOP, padx=15, pady=1)
+        combo["output"].pack(side=tk.TOP, padx=10, pady=5)
+
+    def get_textbox_text(self, box):
+        """
+        Get text of textbox.
+        :param box:
+        :return:
+        """
+        textbox = self.elements["textbox"][box]
+        return textbox.get(1.0, "end")
+
+    def set_textbox_text(self, box, text):
+        """
+        Set text of given textbox.
+        :param box:
+        :param text:
+        :return:
+        """
+        textbox = self.elements["textbox"][box]
+        textbox.delete(1.0, "end")
+        textbox.insert(1.0, text)
+        return
+
+    def get_combobox_text(self, box):
+        """
+        Gets text of given combobox.
+        :param box:
+        :return:
+        """
+        combobox = self.elements["combobox"][box]
+        return combobox.get()
+
+    def hpx(self, percent):
+        """
+        Percent height to pixels
+        :param percent:
+        :return: pixels
+        """
+        return self.sz(percent, axis="h")
+
+    def wpx(self, percent):
+        """
+        Percent width to pixels
+        :param percent:
+        :return: pixels
+        """
+        return self.sz(percent, "w")
+
+    def sz(self, percent, axis):
+        """
+        Takes percent (0-1) of given window axis "w" or "h" and returns as pixels.
+        :param axis: Window axis
+        :param percent: Percent of window
+        :return: Pixels
+        """
+        w,h = self.root.winfo_width(), self.root.winfo_height()
+        if axis == "w":
+            return (w * percent) // 1
+        elif axis == "h":
+            return (h * percent) // 1
+        else:
+            return 0
+
+    def alert(self, msg):
+        """
+        Displays message box with msg as text.
+        :param msg:
+        :return:
+        """
+        messagebox.showinfo("Alert", msg)
+        return self
+
+    def fix_focus(self):
+        self.root.focus()
